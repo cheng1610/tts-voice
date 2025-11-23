@@ -1,0 +1,6 @@
+# ignore .env
+*.env
+# dont ignore .example.env
+!.example.env
+
+**/__pycache__/
