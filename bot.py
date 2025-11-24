@@ -156,15 +156,14 @@ async def on_message(message: discord.Message):
         return
 
     if guild.tts_channel_id is None:
-        return
+        return message.channel.send("⚠️請選擇一個tts頻道")
 
     if message.channel.id != guild.tts_channel_id:
-        return
+        return message.channel.send("⚠️請在同一個語音頻道內")
 
     if message.author.voice is None:
-        await message.channel.send("❌ 你要先加入語音頻道")
-        return
-
+        return await message.channel.send("❌ 你要先加入語音頻道")
+        
     voice_channel = message.author.voice.channel
 
     vc = guild.vc
