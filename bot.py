@@ -89,7 +89,9 @@ async def connect(ctx: discord.ApplicationContext):
 @bot.slash_command(description="斷開語音頻道")
 async def disconnect(ctx: discord.ApplicationContext):
     guild = client.get(ctx.guild.id)  
-    vc = guild.vc
+
+    if guild:
+        vc = guild.vc
 
     if guild and vc:
         await ctx.voice_client.disconnect()
@@ -109,7 +111,7 @@ async def set_tts_channel(
             return await ctx.respond("❌ 您沒有管理權限所以無法操作!", ephemeral=True)
     
     if ctx.guild.id not in client.keys():
-        client[ctx.guild.id] = clients()
+        guild = client.setdefault(ctx.guild.id, clients())
     else:
         guild = client.get(ctx.guild.id)
 
@@ -124,7 +126,7 @@ async def set_tts_voice(
     voice: discord.Option(str, "選擇語音", choices=list(VOICE_OPTIONS.keys())) # type: ignore
 ):
     if ctx.guild.id not in client.keys():
-        client[ctx.guild.id] = clients()
+        guild = client.setdefault(ctx.guild.id, clients())
     else:
         guild = client.get(ctx.guild.id)
 
@@ -133,19 +135,19 @@ async def set_tts_voice(
     await ctx.respond(f"🎤 語音已設定為：`{guild.tts_voice}`")
 
 
-@bot.slash_command(description="永久駐留24/7")
+@bot.slash_command(description="常駐模式")
 async def stay(ctx: discord.ApplicationContext, mode: discord.Option(str, "選擇", choices=["on", "off"])): # type: ignore
     if ctx.guild.id not in client.keys():
-        client[ctx.guild.id] = clients()
+        guild = client.setdefault(ctx.guild.id, clients())
     else:
         guild = client.get(ctx.guild.id)
 
     guild.stay_24_7 = (mode == "on")
 
     await ctx.respond(
-        "🔒 24/7 模式已 **開啟**，bot 會永久待在語音頻道"
+        "🔒 24/7 常駐模式已 **開啟**"
         if guild.stay_24_7 else
-        "🔓 24/7 模式已 **關閉**"
+        "🔓 24/7 常駐模式已 **關閉**"
     )
 
 @bot.event
